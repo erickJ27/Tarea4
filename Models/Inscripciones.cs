@@ -28,10 +28,14 @@ namespace SistemaUniversitario.Models
         public Inscripciones()
         {
             InscripcionId = 0;
+            Fecha = DateTime.Now;
             Semestre = string.Empty;
             Limite = 0;
             Tomados = 0;
             Disponibles=0;
+            EstudianteId = 0;
+            Monto = 0;
+            Balance = 0;
         }
     }
 
