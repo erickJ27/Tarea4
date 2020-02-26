@@ -1,0 +1,58 @@
+﻿@page "/CInscripcion"
+<h3>ConsultaInscripcion</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>InscripcionId</th>
+            <th>Semestre</th>
+            <th>Limite</th>
+            <th>Tomados</th>
+            <th>Disponibles</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ins in Lista)
+        {
+        <tr>
+            <td>@ins.InscripcionId</td>
+            <td>@ins.Semestre</td>
+            <td>@ins.Limite</td>
+            <td>@ins.Tomados</td>
+            <td>@ins.Disponibles</td>
+            <td>
+                <a class="btn btn-outline-primary" href="RInscripcion/@ins.InscripcionId">Ver</a>
+            </td>
+            
+        </tr>
+
+        }
+    </tbody>
+
+
+</table>
+
+@code {
+
+    public List<Inscripciones> Lista { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Lista = new List<Inscripciones>();
+
+        await Task.Run(() => { Cargar(); });
+
+
+    }
+    
+
+    private void Cargar()
+    {
+        InscripcionController db = new InscripcionController();
+
+        Lista = db.GetList(a => true);
+    }
+}
+
+

@@ -1,0 +1,105 @@
+﻿@page "/RPago"
+<h3>Registro de pagos</h3>
+
+<EditForm Model="pagos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label for="PagoId">PagoId</label>
+        <InputNumber @bind-Value="pagos.PagoId" class="form-control" />
+        <button type="button" @onclick="Buscar" class="btn btn-primary">Buscar</button>
+    </div>
+    <div class="form-group">
+        <label for="Matricula"></label>
+        <InputDate @bind-Value="pagos.Fecha" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="InscripcionId">InscripcionId</label>
+        <InputNumber @bind-Value="pagos.InscripcionId" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Monto">Monto</label>
+        <InputNumber @bind-Value="pagos.Monto"  class="form-control" />
+    </div>
+
+    <h6>@Mensaje</h6>
+    <ValidationSummary />
+    <div class="form-group col-md-6">
+        <button type="button" @onclick="Limpiar" class="btn btn-primary">Nuevo</button>
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="button" @onclick="Eliminar" class="btn btn-danger">Eliminar</button>
+
+    </div>
+
+</EditForm>
+
+@code {
+
+    Pagos pagos = new Pagos();
+
+    public string Mensaje;
+
+    private void Limpiar()
+    {
+        pagos = new Pagos();
+    }
+
+    private void Guardar()
+    {
+        PagoController db =new PagoController();
+
+        if (db.Guardar(pagos))
+        {
+            pagos = new Pagos();
+            Mensaje = "Guardado guardar";
+        }
+
+        else
+        {
+            Mensaje = "No se pudo guardar";
+        }
+
+
+    }
+
+    private void Buscar()
+    {
+        PagoController db = new PagoController();
+        Pagos pagostemp;
+
+        if (pagos.PagoId > 0)
+        {
+            pagostemp = db.Buscar(pagos.PagoId);
+
+            if (pagos != null)
+                pagos = pagostemp;
+            else
+                Mensaje = "pago no encontrado";
+        }
+
+    }
+    private void Eliminar()
+    {
+        EstudianteController db = new EstudianteController();
+
+        if(pagos.PagoId != 0)
+        {
+            if (db.Buscar(pagos.PagoId) != null)
+            {
+                db.Eliminar(pagos.PagoId);
+                Mensaje = "Eliminado con exito";
+                pagos = new Pagos();
+
+            }
+            else
+            {
+                Mensaje = "No se puede eliminar un pago que no existe";
+            }
+
+        }
+        else
+        {
+            Mensaje = "Seleccione un id";
+        }
+    }
+
+}

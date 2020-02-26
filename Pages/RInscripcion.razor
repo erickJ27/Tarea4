@@ -1,0 +1,131 @@
+﻿@page "/RInscripcion"
+<h3>Registro de inscripcion</h3>
+
+
+<EditForm Model="inscripciones" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label for="InscripcionId">InscripcionId</label>
+        <InputNumber @bind-Value="inscripciones.InscripcionId" class="form-control" />
+        <button type="button" @onclick="Buscar" class="btn btn-primary">Buscar</button>
+    </div>
+    <div class="form-group">
+        <label for="Semestre">Semestre</label>
+        <InputText @bind-Value="inscripciones.Semestre" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Fecha">Fecha</label>
+        <InputDate @bind-Value="inscripciones.Fecha" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="EstudianteId">Estudiante</label>
+        <InputSelect @bind-Value="inscripciones.EstudianteId" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Limite">Limite</label>
+        <InputNumber @bind-Value="inscripciones.Limite" @oninput="Calcular" @onfocusin="Calcular" @onfocusout="Calcular" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Tomados">Tomados</label>
+        <InputNumber @bind-Value="inscripciones.Tomados" @oninput="Calcular" @onfocusin="Calcular" @onfocusout="Calcular" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Disponibles">Disponibles</label>
+        <InputNumber @bind-Value="inscripciones.Disponibles" readonly="true" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Monto">Monto</label>
+        <InputNumber @bind-Value="inscripciones.Monto" readonly="true" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Balance">Balance</label>
+        <InputNumber @bind-Value="inscripciones.Balance" readonly="true" class="form-control" />
+    </div>
+
+    <h6>@Mensaje</h6>
+    <ValidationSummary />
+    <div class="form-group col-md-6">
+        <button type="button" @onclick="Limpiar" class="btn btn-primary">Nuevo</button>
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="button" @onclick="Eliminar" class="btn btn-danger">Eliminar</button>
+
+    </div>
+
+</EditForm>
+    @code {
+
+        public Inscripciones inscripciones=new Inscripciones();
+    public string Mensaje;
+
+    private void Limpiar()
+    {
+        inscripciones = new Inscripciones();
+    }
+
+    private void Guardar()
+    {
+        InscripcionController db =new InscripcionController();
+
+        if (db.Guardar(inscripciones))
+        {
+            inscripciones = new Inscripciones();
+            Mensaje = "Guardado guardar";
+        }
+
+        else
+        {
+            Mensaje = "No se pudo guardar";
+        }
+
+
+    }
+
+    private void Buscar()
+    {
+        InscripcionController db = new InscripcionController();
+        Inscripciones inscripciontemp;
+
+        if (inscripciones.InscripcionId > 0)
+        {
+            inscripciontemp = db.Buscar(inscripciones.InscripcionId);
+
+            if (inscripciontemp != null)
+                inscripciones = inscripciontemp;
+            else
+                Mensaje = "inscripcion no encontrada";
+        }
+
+    }
+    private void Eliminar()
+    {
+        InscripcionController db = new InscripcionController();
+
+        if(inscripciones.InscripcionId != 0)
+        {
+            if (db.Buscar(inscripciones.InscripcionId) != null)
+            {
+                db.Eliminar(inscripciones.InscripcionId);
+                Mensaje = "Eliminado con exito";
+                inscripciones = new Inscripciones();
+
+            }
+            else
+            {
+                Mensaje = "No se puede eliminar una inscripcion que no existe";
+            }
+
+        }
+        else
+        {
+            Mensaje = "Seleccione un id";
+        }
+    }
+    private void Calcular()
+    {
+
+        inscripciones.Disponibles = inscripciones.Limite - inscripciones.Tomados;
+
+    }
+
+    }
