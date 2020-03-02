@@ -1,4 +1,4 @@
-﻿@page "/RInscripcion"
+﻿@page "/RInscripcion/{InscripcionId:int}"
 <h3>Registro de inscripcion</h3>
 
 
@@ -53,9 +53,11 @@
     </div>
 
 </EditForm>
-    @code {
+@code {
+    [Parameter]
+    public int InscripcionId { get; set; }
 
-        public Inscripciones inscripciones=new Inscripciones();
+    public Inscripciones inscripciones = new Inscripciones();
     public string Mensaje;
 
     private void Limpiar()
@@ -63,9 +65,17 @@
         inscripciones = new Inscripciones();
     }
 
+    protected override void OnInitialized()
+    {
+        if (InscripcionId > 0)
+        {
+            inscripciones.InscripcionId = InscripcionId;
+            Buscar();
+        }
+    }
     private void Guardar()
     {
-        InscripcionController db =new InscripcionController();
+        InscripcionController db = new InscripcionController();
 
         if (db.Guardar(inscripciones))
         {
@@ -101,7 +111,7 @@
     {
         InscripcionController db = new InscripcionController();
 
-        if(inscripciones.InscripcionId != 0)
+        if (inscripciones.InscripcionId != 0)
         {
             if (db.Buscar(inscripciones.InscripcionId) != null)
             {
@@ -128,4 +138,4 @@
 
     }
 
-    }
+}

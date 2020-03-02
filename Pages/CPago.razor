@@ -1,0 +1,56 @@
+﻿@page "/CPago"
+<h3>Consulta de pago</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>PagoId</th>
+            <th>Fecha</th>
+            <th>InscripcionId</th>
+            <th>Monto</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pag in Lista)
+        {
+        <tr>
+            <td>@pag.PagoId</td>
+            <td>@pag.Fecha</td>
+            <td>@pag.InscripcionId</td>
+            <td>@pag.Monto</td>
+            <td>
+                <a class="btn btn-outline-primary" href="RPago/@pag.PagoId">Ver</a>
+            </td>
+            
+        </tr>
+
+        }
+    </tbody>
+
+
+</table>
+
+@code {
+
+    public List<Pagos> Lista { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Lista = new List<Pagos>();
+
+        await Task.Run(() => { Cargar(); });
+
+
+    }
+    
+
+    private void Cargar()
+    {
+        PagoController db = new PagoController();
+
+        Lista = db.GetList(a => true);
+    }
+}
+
+

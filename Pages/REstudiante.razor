@@ -1,4 +1,4 @@
-﻿@page  "/REstudiante"
+﻿@page  "/REstudiante/{EstudianteId:int}"
 <h3>Registro de estudiantes</h3>
 
 <EditForm Model="estudiantes" OnValidSubmit="Guardar">
@@ -33,11 +33,20 @@
 </EditForm>
 
 @code {
-
+    [Parameter]
+    public int EstudianteId { get; set; }
     Estudiantes estudiantes = new Estudiantes();
 
     public string Mensaje;
 
+    protected override void OnInitialized()
+    {
+        if (EstudianteId > 0)
+        {
+            estudiantes.EstudianteId = EstudianteId;
+            Buscar();
+        }
+    }
     private void Limpiar()
     {
         estudiantes = new Estudiantes();

@@ -1,4 +1,4 @@
-﻿@page "/RPago"
+﻿@page "/RPago/{PagoId:int}"
 <h3>Registro de pagos</h3>
 
 <EditForm Model="pagos" OnValidSubmit="Guardar">
@@ -34,6 +34,9 @@
 
 @code {
 
+    [Parameter]
+    public int PagoId { get; set; }
+
     Pagos pagos = new Pagos();
 
     public string Mensaje;
@@ -41,6 +44,14 @@
     private void Limpiar()
     {
         pagos = new Pagos();
+    }
+    protected override void OnInitialized()
+    {
+        if (PagoId > 0)
+        {
+            pagos.PagoId = PagoId;
+            Buscar();
+        }
     }
 
     private void Guardar()

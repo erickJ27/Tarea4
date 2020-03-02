@@ -1,0 +1,58 @@
+﻿@page "/CAsignatura"
+<h3>Consulta de asignaturas</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>AsignaturaId</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>PreRequisito</th>
+            <th>Creditos</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var asi in Lista)
+        {
+        <tr>
+            <td>@asi.AsignaturaId</td>
+            <td>@asi.Codigo</td>
+            <td>@asi.Descripcion</td>
+            <td>@asi.PreRequisito</td>
+            <td>@asi.Creditos</td>
+            <td>
+                <a class="btn btn-outline-primary" href="RAsignatura/@asi.AsignaturaId">Ver</a>
+            </td>
+            
+        </tr>
+
+        }
+    </tbody>
+
+
+</table>
+
+@code {
+
+    public List<Asignaturas> Lista { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Lista = new List<Asignaturas>();
+
+        await Task.Run(() => { Cargar(); });
+
+
+    }
+    
+
+    private void Cargar()
+    {
+        AsignaturaController db = new AsignaturaController();
+
+        Lista = db.GetList(a => true);
+    }
+}
+
+
