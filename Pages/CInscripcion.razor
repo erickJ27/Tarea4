@@ -5,10 +5,14 @@
     <thead>
         <tr>
             <th>InscripcionId</th>
+            <th>Fecha</th>
             <th>Semestre</th>
             <th>Limite</th>
             <th>Tomados</th>
             <th>Disponibles</th>
+            <th>EstudianteId</th>
+            <th>Monto</th>
+            <th>Balance</th>
             <th></th>
         </tr>
     </thead>
@@ -17,10 +21,14 @@
         {
         <tr>
             <td>@ins.InscripcionId</td>
+            <td>@ins.Fecha</td>
             <td>@ins.Semestre</td>
             <td>@ins.Limite</td>
             <td>@ins.Tomados</td>
             <td>@ins.Disponibles</td>
+            <td>@ins.EstudianteId</td>
+            <td>@ins.Monto</td>
+            <td>@ins.Balance</td>
             <td>
                 <a class="btn btn-outline-primary" href="RInscripcion/@ins.InscripcionId">Ver</a>
             </td>

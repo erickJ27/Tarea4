@@ -1,4 +1,4 @@
-﻿@page "/RAsignatura/{AsginaturaId:int}"
+﻿@page "/RAsignatura/{AsignaturaId:int}"
 <h3>Registro asignatura</h3>
 
 <EditForm Model="asignaturas" OnValidSubmit="Guardar">
@@ -64,7 +64,7 @@
         if (db.Guardar(asignaturas))
         {
             asignaturas = new Asignaturas();
-            Mensaje = "Guardado guardar";
+            Mensaje = "Guardado";
         }
 
         else

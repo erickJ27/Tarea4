@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,8 @@ namespace SistemaUniversitario.Models
         public decimal Monto { get; set; }
         public decimal Balance { get; set; }
 
+        [ForeignKey("InscripcionId")]
+        public List<InscripcionesDetalle> Detalles { get; set; }
         public Inscripciones()
         {
             InscripcionId = 0;
@@ -36,6 +39,7 @@ namespace SistemaUniversitario.Models
             EstudianteId = 0;
             Monto = 0;
             Balance = 0;
+            Detalles = new List<InscripcionesDetalle>();
         }
     }
 

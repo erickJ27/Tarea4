@@ -19,13 +19,76 @@
     </div>
     <div class="form-group">
         <label for="EstudianteId">Estudiante</label>
-        <InputSelect @bind-Value="inscripciones.EstudianteId" class="form-control" />
+        <InputSelect @bind-Value="EstudianteSeleccionado" class="form-control" @onchange="CargarEstudiante" @onclick="CargarEstudiante">
+            <option value="" disabled selected>Seleccione un Estudiante</option>
+            @foreach (var item in ListaEstudiante)
+            {
+                <option value="@item.EstudianteId">@item.Nombres</option>
+            }
+        </InputSelect>
     </div>
-
     <div class="form-group">
-        <label for="Limite">Limite</label>
+        <label for="Limite">Limite de creditos</label>
         <InputNumber @bind-Value="inscripciones.Limite" @oninput="Calcular" @onfocusin="Calcular" @onfocusout="Calcular" class="form-control" />
     </div>
+    <div class="form-group ">
+        <div class="form-row">
+            <div class="form-group col-mb-3">
+                <label>Asignatura</label>
+                <InputSelect @bind-Value="AsignaturaSeleccionada" class="form-control" @onchange="CargarAsignatura" @onclick="CargarAsignatura">
+                    <option value="" disabled selected>Seleccione una asignatura</option>
+                    @foreach (var item in ListaAsignatura)
+                    {
+                        <option value="@item.AsignaturaId">@item.Descripcion</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group col-mb-3">
+                <label>Creditos</label>
+                <InputNumber @bind-Value="Creditos" readonly="true" class="form-control">
+
+                </InputNumber>
+            </div>
+            <div class="form-group col-mb-3">
+                <label>Precio</label>
+                <InputNumber @bind-Value="Precio" class="form-control">
+
+                </InputNumber>
+            </div>
+            
+            
+                <button type="button"class="btn btn-primary col-mb-3" @onclick="AgregarAsignatura">Agregar</button>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Descripcion</th>
+                    <th>Credito</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in inscripciones.Detalles)
+                {
+                    <tr>
+                        <th>@item.AsignaturaId</th>
+                        <th>@item.DescripcionAsignatura</th>
+                        <th>@item.Creditos</th>
+                        <th>@item.SubTotal</th>
+                        <th><button type="button" class="btn btn-outline-danger btn-sm" @onclick="(()=> EliminarAsigantura(item))">Eliminar</button></th>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
     <div class="form-group">
         <label for="Tomados">Tomados</label>
         <InputNumber @bind-Value="inscripciones.Tomados" @oninput="Calcular" @onfocusin="Calcular" @onfocusout="Calcular" class="form-control" />
@@ -60,27 +123,80 @@
     public Inscripciones inscripciones = new Inscripciones();
     public string Mensaje;
 
-    private void Limpiar()
-    {
-        inscripciones = new Inscripciones();
-    }
+    EstudianteController estudiantecontrol = new EstudianteController();
+    AsignaturaController asignaturacontrol = new AsignaturaController();
+
+    public List<Estudiantes> ListaEstudiante = new List<Estudiantes>();
+    public List<Asignaturas> ListaAsignatura = new List<Asignaturas>();
+
+    private string EstudianteSeleccionado { get; set; }
+    private string AsignaturaSeleccionada { get; set; }
+    private decimal Precio { get; set; }
+    private decimal Total { get; set; }
+    private int Credito { get; set; }
+    private decimal SubTotal { get; set; }
+
+    private int Creditos { get; set; }
+
+    private Estudiantes Estudiante { get; set; }
+    private Asignaturas Asignatura { get; set; }
+
 
     protected override void OnInitialized()
     {
+        ListaAsignatura = asignaturacontrol.GetList(e => true);
+        ListaEstudiante = estudiantecontrol.GetList(e => true);
+        Estudiante = new Estudiantes();
+        Asignatura = new Asignaturas();
+
         if (InscripcionId > 0)
         {
             inscripciones.InscripcionId = InscripcionId;
             Buscar();
         }
     }
+    private void Limpiar()
+    {
+        EstudianteSeleccionado = string.Empty;
+        inscripciones = new Inscripciones();
+    }
+
+    private void CargarEstudiante()
+    {
+        try
+        {
+            Estudiante = estudiantecontrol.Buscar(Convert.ToInt32(EstudianteSeleccionado));
+        }
+        catch (Exception)
+        {
+
+
+        }
+
+    }
+    private void CargarAsignatura()
+    {
+        try
+        {
+            Asignatura = asignaturacontrol.Buscar(Convert.ToInt32(AsignaturaSeleccionada));
+        }
+        catch (Exception)
+        {
+
+
+        }
+
+    }
+
     private void Guardar()
     {
         InscripcionController db = new InscripcionController();
+        inscripciones.EstudianteId = Convert.ToInt32( EstudianteSeleccionado);
 
         if (db.Guardar(inscripciones))
         {
-            inscripciones = new Inscripciones();
-            Mensaje = "Guardado guardar";
+            Limpiar();
+            Mensaje = "Guardado";
         }
 
         else
@@ -117,7 +233,7 @@
             {
                 db.Eliminar(inscripciones.InscripcionId);
                 Mensaje = "Eliminado con exito";
-                inscripciones = new Inscripciones();
+                Limpiar();
 
             }
             else
@@ -136,6 +252,65 @@
 
         inscripciones.Disponibles = inscripciones.Limite - inscripciones.Tomados;
 
+    }
+    private void AgregarAsignatura()
+    {
+        if(inscripciones.Limite <= 0)
+        {
+            Mensaje = "Los créditos exceden a el límite admitido";
+        }
+        else
+        {
+            if (AsignaturaSeleccionada ==null)
+            {
+                Mensaje = "Debes seleccionar una asignatura";
+            }
+            else
+            {
+                if (Precio <= 0)
+                {
+                    Mensaje = "El precio es obligatorio";
+                }
+                else
+                {
+                    if (inscripciones.Detalles.Any(i => i.AsignaturaId == Asignatura.AsignaturaId))
+                    {
+                        Mensaje = "Esta Asignatura ya esta agregada";
+                    }
+                    else
+                    {
+                        Mensaje = "";
+                        inscripciones.Detalles.Add(new InscripcionesDetalle()
+                        {
+                            InscripcionId = inscripciones.InscripcionId,
+                            AsignaturaId = Asignatura.AsignaturaId,
+                            DescripcionAsignatura = Asignatura.Descripcion,
+                            Creditos = Asignatura.Creditos,
+                            SubTotal = (Asignatura.Creditos * Precio)
+                        });
+                        Asignatura = new Asignaturas();
+
+                        int total = 0;
+
+                        foreach (var item in inscripciones.Detalles)
+                        {
+                            Total += item.SubTotal;
+                            Credito += item.Creditos;
+
+                            
+                        }
+
+                        inscripciones.Monto = total;
+                        inscripciones.Tomados = Credito;
+                    }
+                }
+            }
+        }
+
+    }
+    private void EliminarAsigantura(InscripcionesDetalle detalle)
+    {
+        inscripciones.Detalles.Remove(detalle);
     }
 
 }
